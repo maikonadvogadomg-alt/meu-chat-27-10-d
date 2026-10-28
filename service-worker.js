@@ -1,14 +1,11 @@
-// service-worker.js — gerado pelo Mini SK em 28/10/2026, 03:24:06
+// service-worker.js — gerado pelo Mini SK em 28/10/2026, 13:43:24
 // Não precisa mexer: ele guarda sozinho o que o app usa.
-const PREFIXO = 'sk-meu-chat-27-10-d-';
-const CACHE = PREFIXO + 'mvrqbaua';
+const PREFIXO = 'sk-projeto-28-10-2026-28-10-2026--';
+const CACHE = PREFIXO + 'mvscfq63';
 // Lista feita automaticamente (para funcionar sem internet logo após instalar)
 const GUARDAR = [
   "./",
-  "./css/app.css",
   "./favicon.ico",
-  "./hub.html",
-  "./hub.webmanifest",
   "./icons/apple-touch-icon.png",
   "./icons/icon-16.png",
   "./icons/icon-32.png",
@@ -27,22 +24,28 @@ const GUARDAR = [
   "./icons/maskable-512.png",
   "./icons/maskable.svg",
   "./index.html",
-  "./js/00-base.js",
-  "./js/10-banco.js",
-  "./js/20-provedores.js",
-  "./js/30-memoria.js",
-  "./js/40-voz.js",
-  "./js/50-internet.js",
-  "./js/60-previa.js",
-  "./js/70-texto.js",
-  "./js/80-chat.js",
-  "./js/85-config.js",
-  "./js/90-backup.js",
-  "./js/99-app.js",
-  "./LEIA-ME.txt",
   "./manifest.json",
-  "./PLANO.md",
-  "./sw.js"
+  "./meus-links/favicon.ico",
+  "./meus-links/icons/apple-touch-icon.png",
+  "./meus-links/icons/icon-16.png",
+  "./meus-links/icons/icon-32.png",
+  "./meus-links/icons/icon-48.png",
+  "./meus-links/icons/icon-72.png",
+  "./meus-links/icons/icon-96.png",
+  "./meus-links/icons/icon-128.png",
+  "./meus-links/icons/icon-144.png",
+  "./meus-links/icons/icon-152.png",
+  "./meus-links/icons/icon-180.png",
+  "./meus-links/icons/icon-192.png",
+  "./meus-links/icons/icon-384.png",
+  "./meus-links/icons/icon-512.png",
+  "./meus-links/icons/icon.svg",
+  "./meus-links/icons/maskable-192.png",
+  "./meus-links/icons/maskable-512.png",
+  "./meus-links/icons/maskable.svg",
+  "./meus-links/index.html",
+  "./meus-links/manifest.json",
+  "./meus-links/service-worker.js"
 ];
 
 self.addEventListener('install', (e) => {

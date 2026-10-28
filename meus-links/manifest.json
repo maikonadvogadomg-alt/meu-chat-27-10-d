@@ -1,14 +1,14 @@
 {
-  "name": "Meu-Chat-27-10-D",
-  "short_name": "Meu-Chat-27-",
-  "description": "Meu-Chat-27-10-D",
-  "id": "./app-meu-chat-27-10-d-hub",
-  "start_url": "./hub.html",
+  "name": "Meus Links",
+  "short_name": "Meus Links",
+  "description": "Meus Links",
+  "id": "./app-meus-links",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",
-  "background_color": "#0a0a0a",
-  "theme_color": "#5d5e53",
+  "background_color": "#0f1420",
+  "theme_color": "#0f1420",
   "lang": "pt-BR",
   "dir": "ltr",
   "icons": [
@@ -89,12 +89,6 @@
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any"
-    }
-  ],
-  "shortcuts": [
-    {
-      "name": "Meu Chat",
-      "url": "index.html"
     }
   ]
 }

@@ -8,13 +8,6 @@
     <uses-feature android:name="android.hardware.camera" android:required="false" />
     <uses-feature android:name="android.hardware.microphone" android:required="false" />
 
-    <!-- 🎤 ditado por voz no APK: o app precisa "enxergar" o reconhecimento de voz do Google -->
-    <queries>
-        <intent>
-            <action android:name="android.speech.RecognitionService" />
-        </intent>
-    </queries>
-
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"

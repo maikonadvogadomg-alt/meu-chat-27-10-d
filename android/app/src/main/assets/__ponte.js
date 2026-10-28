@@ -3,24 +3,6 @@
 (function () {
   if (window.__ponteAPK || !window.AndroidBridge) return;
   window.__ponteAPK = 1;
-  // 🎤 ditado: dentro do APK não existe o reconhecimento de voz do Chrome. Este faz o papel dele usando o do Android.
-  if (window.AndroidVoz && !window.SpeechRecognition && !window.webkitSpeechRecognition) {
-    var evento = function (t, fim) { var alt = { transcript: t, confidence: 1 }; var res = [alt]; res.isFinal = fim; res.item = function (k) { return res[k]; }; var lista = [res]; lista.item = function (k) { return lista[k]; }; return { resultIndex: 0, results: lista }; };
-    var SR = function () { this.lang = 'pt-BR'; this.interimResults = false; this.continuous = false; this.maxAlternatives = 1; this.onresult = this.onerror = this.onend = this.onstart = null; this._ev = {}; };
-    SR.prototype.addEventListener = function (n, f) { (this._ev[n] = this._ev[n] || []).push(f); };
-    SR.prototype.removeEventListener = function (n, f) { var l = this._ev[n] || []; var i = l.indexOf(f); if (i >= 0) l.splice(i, 1); };
-    SR.prototype._dar = function (n, e) { try { if (this['on' + n]) this['on' + n](e); } catch (x) {} var l = this._ev[n] || []; for (var i = 0; i < l.length; i++) try { l[i](e); } catch (x) {} };
-    SR.prototype.start = function () {
-      var me = this, fim = false;
-      var acabar = function () { if (!fim) { fim = true; me._dar('end', {}); } };
-      window.__vozParcial = function (t) { if (me.interimResults) me._dar('result', evento(t, false)); };
-      window.__vozResultado = function (t) { if (t) me._dar('result', evento(t, true)); acabar(); };
-      window.__vozErro = function (m) { me._dar('error', { error: /permiss/i.test(m) ? 'not-allowed' : (/ouvi/i.test(m) ? 'no-speech' : 'network'), message: m }); acabar(); };
-      me._dar('start', {}); window.AndroidVoz.ouvir(me.lang || 'pt-BR');
-    };
-    SR.prototype.stop = SR.prototype.abort = function () { try { window.AndroidVoz.parar(); } catch (x) {} };
-    window.SpeechRecognition = window.webkitSpeechRecognition = SR;
-  }
   var B = window.AndroidBridge;
   var P = {
     salvar: function (b64, tipo, nome) { var r = B.salvar(nome, b64, tipo); if (r !== 'ok') B.aviso('Não consegui salvar: ' + r); },

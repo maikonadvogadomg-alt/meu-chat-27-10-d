@@ -21,10 +21,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-import android.speech.RecognitionListener;
-import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
-import org.json.JSONObject;
 
 import androidx.webkit.ServiceWorkerClientCompat;
 import androidx.webkit.ServiceWorkerControllerCompat;
@@ -53,9 +49,6 @@ public class MainActivity extends Activity {
     private ValueCallback<Uri[]> retornoArquivo;
     private static final int PEDIR_MICROFONE = 42;
     private PermissionRequest pedidoPendente;
-    private static final int PEDIR_VOZ = 43;
-    private SpeechRecognizer reconhecedor;
-    private String vozLingua = "pt-BR";
 
     @Override
     protected void onCreate(Bundle salvo) {
@@ -153,7 +146,6 @@ public class MainActivity extends Activity {
         });
 
         web.addJavascriptInterface(new Ponte(), "AndroidBridge");
-        web.addJavascriptInterface(new Voz(), "AndroidVoz"); // 🎤 ditado pelo Android (a "janelinha" não tem o do Chrome)
         setContentView(web);
         if (salvo != null) web.restoreState(salvo);
         else web.loadUrl(INICIO);
@@ -182,12 +174,6 @@ public class MainActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int pedido, String[] permissoes, int[] resultados) {
         super.onRequestPermissionsResult(pedido, permissoes, resultados);
-        if (pedido == PEDIR_VOZ) {
-            boolean okVoz = resultados.length > 0 && resultados[0] == PackageManager.PERMISSION_GRANTED;
-            if (okVoz) comecarVoz();
-            else js("window.__vozErro&&window.__vozErro(" + JSONObject.quote("Sem permissão de microfone. Libere em Configurações → Apps → este app → Permissões.") + ")");
-            return;
-        }
         if (pedido == PEDIR_MICROFONE && pedidoPendente != null) {
             boolean ok = resultados.length > 0;
             for (int r : resultados) if (r != PackageManager.PERMISSION_GRANTED) ok = false;
@@ -252,74 +238,6 @@ public class MainActivity extends Activity {
         if (web != null) web.evaluateJavascript("try{window.dispatchEvent(new Event('pagehide'));window.dispatchEvent(new Event('app-pausa'));}catch(e){}", null);
         super.onPause();
         CookieManager.getInstance().flush();
-    }
-
-    private void js(final String codigo) { runOnUiThread(() -> { if (web != null) web.evaluateJavascript(codigo, null); }); }
-
-    /** 🎤 Ouve uma frase com o reconhecimento de voz do próprio Android e devolve o texto para a página. */
-    private void comecarVoz() {
-        if (!SpeechRecognizer.isRecognitionAvailable(this)) {
-            js("window.__vozErro&&window.__vozErro(" + JSONObject.quote("Este celular não tem o reconhecimento de voz do Google. Instale ou atualize o app Google.") + ")");
-            return;
-        }
-        if (reconhecedor != null) { try { reconhecedor.destroy(); } catch (Exception ignorado) { } }
-        reconhecedor = SpeechRecognizer.createSpeechRecognizer(this);
-        reconhecedor.setRecognitionListener(new RecognitionListener() {
-            @Override public void onReadyForSpeech(Bundle b) { }
-            @Override public void onBeginningOfSpeech() { }
-            @Override public void onRmsChanged(float v) { }
-            @Override public void onBufferReceived(byte[] b) { }
-            @Override public void onEndOfSpeech() { }
-            @Override public void onEvent(int tipo, Bundle b) { }
-            @Override public void onError(int erro) {
-                String m;
-                if (erro == SpeechRecognizer.ERROR_NO_MATCH || erro == SpeechRecognizer.ERROR_SPEECH_TIMEOUT) m = "Não ouvi nada. Toque no microfone e fale.";
-                else if (erro == SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS) m = "Sem permissão de microfone.";
-                else if (erro == SpeechRecognizer.ERROR_NETWORK || erro == SpeechRecognizer.ERROR_NETWORK_TIMEOUT) m = "Sem internet para entender a voz.";
-                else m = "O reconhecimento de voz falhou (código " + erro + ").";
-                js("window.__vozErro&&window.__vozErro(" + JSONObject.quote(m) + ")");
-            }
-            @Override public void onResults(Bundle b) {
-                ArrayList<String> r = b.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                String t = (r != null && !r.isEmpty()) ? r.get(0) : "";
-                js("window.__vozResultado&&window.__vozResultado(" + JSONObject.quote(t) + ")");
-            }
-            @Override public void onPartialResults(Bundle b) {
-                ArrayList<String> r = b.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-                if (r != null && !r.isEmpty()) js("window.__vozParcial&&window.__vozParcial(" + JSONObject.quote(r.get(0)) + ")");
-            }
-        });
-        Intent i = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        i.putExtra(RecognizerIntent.EXTRA_LANGUAGE, vozLingua);
-        i.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-        reconhecedor.startListening(i);
-    }
-
-    @Override
-    protected void onDestroy() {
-        if (reconhecedor != null) { try { reconhecedor.destroy(); } catch (Exception ignorado) { } }
-        super.onDestroy();
-    }
-
-    /** Ponte JavaScript → Android para a voz: window.AndroidVoz.ouvir("pt-BR") / parar(). */
-    class Voz {
-        @JavascriptInterface
-        public void ouvir(String lingua) {
-            vozLingua = (lingua == null || lingua.isEmpty()) ? "pt-BR" : lingua;
-            runOnUiThread(() -> {
-                if (checkSelfPermission(android.Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
-                    requestPermissions(new String[]{ android.Manifest.permission.RECORD_AUDIO }, PEDIR_VOZ);
-                    return;
-                }
-                comecarVoz();
-            });
-        }
-
-        @JavascriptInterface
-        public void parar() {
-            runOnUiThread(() -> { if (reconhecedor != null) { try { reconhecedor.stopListening(); } catch (Exception ignorado) { } } });
-        }
     }
 
     /** Ponte JavaScript → Android: salva arquivos baixados na pasta Downloads. */

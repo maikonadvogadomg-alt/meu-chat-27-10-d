@@ -1,13 +1,16 @@
 {
-  "name": "Meu-Chat-27-10-D",
-  "short_name": "Meu-Chat-27-",
-  "id": "./app-meu-chat-27-10-d",
+  "name": "Projeto 28-10-2026 28-10-2026, 13-42-14",
+  "short_name": "Projeto 28-1",
+  "description": "Projeto 28-10-2026 28-10-2026, 13-42-14",
+  "id": "./app-projeto-28-10-2026-28-10-2026-",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0f172a",
-  "theme_color": "#0f172a",
+  "orientation": "any",
+  "background_color": "#0f1420",
+  "theme_color": "#0f1420",
   "lang": "pt-BR",
+  "dir": "ltr",
   "icons": [
     {
       "src": "icons/icon-48.png",
@@ -88,7 +91,10 @@
       "purpose": "any"
     }
   ],
-  "description": "Meu-Chat-27-10-D",
-  "orientation": "any",
-  "dir": "ltr"
+  "shortcuts": [
+    {
+      "name": "Meus Links",
+      "url": "meus-links/index.html"
+    }
+  ]
 }
